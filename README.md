@@ -11,7 +11,7 @@ Master of Epic公式サイトのアイテムボックスをアカウント別に
 
 ## Chrome / Edgeへの導入
 
-1. 上のChrome / Edge用ZIPをダウンロードし、削除しない場所へ展開します。
+1. 上のChrome / Edge用ZIPをダウンロードし、任意の場所へ展開します。
 2. Chromeは `chrome://extensions`、Edgeは `edge://extensions` を開きます。
 3. 「デベロッパーモード」をONにします。
 4. 「パッケージ化されていない拡張機能を読み込む」を選び、展開した `manifest.json` のあるフォルダを指定します。
