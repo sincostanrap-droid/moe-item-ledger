@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "MoE アイテム台帳",
+  "version": "0.1.1",
+  "description": "アイテムボックスをアカウント別に保存して横断検索。",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MoE アイテム台帳"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://moepic.com/mp_itembox/mp_itembox.php*",
+        "https://www.moepic.com/mp_itembox/mp_itembox.php*"
+      ],
+      "js": [
+        "parser.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "moe-ledger@local.invalid",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}
