@@ -2,14 +2,26 @@
 
 Master of Epic公式サイトのアイテムボックスをアカウント別に記録し、横断検索する非公式ブラウザ拡張です。
 
-**v0.1.1 / ストア審査待ちの方向け手動導入版**。Chrome・Edge版は展開して読み込み、Firefox版は一時的なアドオンとして利用します。ここに置いているFirefox版は未署名です。
+**Chrome版はChrome ウェブストアで公開中です。** [MoE アイテム台帳をインストール](https://chromewebstore.google.com/detail/amhcpkmoefmdegoeokoffboimffodmbf?hl=ja)
 
-## ダウンロード
+Firefox版はストア審査待ちです。審査待ちの間は、下記の未署名ZIPを一時的なアドオンとして利用できます。手動導入用ZIPはv0.1.1です。
+
+## Chrome版のインストール
+
+1. [Chrome ウェブストアの「MoE アイテム台帳」](https://chromewebstore.google.com/detail/amhcpkmoefmdegoeokoffboimffodmbf?hl=ja)を開き、「Chromeに追加」を押します。
+2. 拡張機能メニューから「MoE アイテム台帳」をツールバーに固定します。
+3. 公式サイトにログインしてアイテムボックスを開きます。既に開いている場合は再読み込みします。
+
+### 手動導入版からストア版へ移行する場合
+
+手動導入版の「設定・バックアップ」でJSONを保存してから、手動導入版を無効にし、ストア版をインストールしてください。ストア版の「設定・バックアップ」でJSONを復元し、内容を確認してから不要になった手動導入版を削除します。保存データは自動では引き継がれません。
+
+## 手動導入用ダウンロード
 
 - [Chrome / Edge用 ZIP](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-chrome-v0.1.1.zip)
 - [Firefox用 ZIP（未署名）](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-firefox-v0.1.1.zip)
 
-## Chrome / Edgeへの導入
+## Chrome / Edgeへの手動導入
 
 1. 上のChrome / Edge用ZIPをダウンロードし、任意の場所へ展開します。
 2. Chromeは `chrome://extensions`、Edgeは `edge://extensions` を開きます。
@@ -47,6 +59,10 @@ Firefox 140以降が対象です。一時インストールはFirefox再起動�
 
 ## 更新方法
 
+Chrome ウェブストアからインストールした版は、ストア経由で自動更新されます。
+
+以下は手動導入版の更新手順です。
+
 バックアップを保存後、新しいZIPのファイルを同じ展開先に置き換え、拡張管理画面で拡張を再読み込みし、公式アイテムボックスも再読み込みします。この手動導入版に自動更新はありません。ブラウザ間の自動同期もありません。別の導入方法へ切り替える場合は必要に応じてJSONを復元してください。
 
 ## 制限
@@ -83,3 +99,4 @@ Node.jsと `python` コマンドで動作するPython 3が必要です。fixture
 ## ライセンス
 
 [MIT License](LICENSE)。本ツールはMaster of Epicの運営・開発元とは関係のない非公式ツールです。
+
