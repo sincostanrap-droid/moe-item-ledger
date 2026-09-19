@@ -24,8 +24,20 @@ globalThis.MoeSearch = {
   }
   return result;
  },
+ groupedRows(ledger,query='',account='') {
+  const groups=new Map();
+  for(const entry of this.rows(ledger,query,account)){
+   let row=groups.get(entry.name);
+   if(!row){row={name:entry.name,quantity:0,owners:[],updatedAt:entry.updatedAt};groups.set(entry.name,row);}
+   row.quantity+=entry.quantity;row.owners.push(entry);
+   row.updatedAt=row.updatedAt===null||entry.updatedAt===null?null:Math.min(row.updatedAt,entry.updatedAt);
+  }
+  for(const row of groups.values())row.owners.sort((a,b)=>a.account.name.localeCompare(b.account.name,'ja',{numeric:true}));
+  return [...groups.values()];
+ },
  sort(rows,key='name',direction=1){
   const text=(a,b)=>a.localeCompare(b,'ja',{numeric:true});
+  const ownerText=(r,key)=>r.owners?r.owners.map(o=>o.account[key]||'').join(' / '):(r.account[key]||'');
   return rows.sort((a,b)=>{
    let cmp=0;
    if(key==='updatedAt'){
@@ -34,10 +46,10 @@ globalThis.MoeSearch = {
     if(b.updatedAt===null&&a.updatedAt!==null)return -1;
     cmp=(a.updatedAt??0)-(b.updatedAt??0);
    }else if(key==='quantity')cmp=a.quantity-b.quantity;
-   else if(key==='account')cmp=text(a.account.name,b.account.name);
-   else if(key==='loginId')cmp=text(a.account.loginId||'',b.account.loginId||'');
+   else if(key==='account')cmp=text(ownerText(a,'name'),ownerText(b,'name'));
+   else if(key==='loginId')cmp=text(ownerText(a,'loginId'),ownerText(b,'loginId'));
    else cmp=text(a.name,b.name);
-   return cmp*direction||text(a.name,b.name)||text(a.account.name,b.account.name);
+   return cmp*direction||text(a.name,b.name)||text(ownerText(a,'name'),ownerText(b,'name'));
   });
  }
 };

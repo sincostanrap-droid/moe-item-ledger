@@ -4,7 +4,7 @@ Master of Epic公式サイトのアイテムボックスをアカウント別に
 
 **Chrome版はChrome ウェブストアで公開中です。** [MoE アイテム台帳をインストール](https://chromewebstore.google.com/detail/amhcpkmoefmdegoeokoffboimffodmbf?hl=ja)
 
-Firefox版はストア審査待ちです。審査待ちの間は、下記の未署名ZIPを一時的なアドオンとして利用できます。手動導入用ZIPはv0.1.1です。
+Firefox版はストア審査待ちです。審査待ちの間は、下記の未署名ZIPを一時的なアドオンとして利用できます。手動導入用ZIPはv0.1.3です。
 
 ## Chrome版のインストール
 
@@ -18,8 +18,8 @@ Firefox版はストア審査待ちです。審査待ちの間は、下記の未�
 
 ## 手動導入用ダウンロード
 
-- [Chrome / Edge用 ZIP](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-chrome-v0.1.1.zip)
-- [Firefox用 ZIP（未署名）](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-firefox-v0.1.1.zip)
+- [Chrome / Edge用 ZIP](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-chrome-v0.1.3.zip)
+- [Firefox用 ZIP（未署名）](https://github.com/sincostanrap-droid/moe-item-ledger/raw/refs/heads/main/dist/moe-ledger-firefox-v0.1.3.zip)
 
 ## Chrome / Edgeへの手動導入
 
@@ -47,7 +47,7 @@ Firefox 140以降が対象です。一時インストールはFirefox再起動�
 - 列見出しを押すと、名前・アカウント・ID・個数・更新日時の昇順／降順を切り替えます。
 - 「大きな画面で開く」で別タブの一覧を開けます。
 - 「アカウント」でIDの編集、各ページの取得日時・未取得状態を確認できます。
-- 「設定・バックアップ」で自動取得の切り替え、JSONの保存・復元ができます。CSV出力は未実装です。
+- 「設定・バックアップ」で自動取得の切り替え、JSONの保存・復元ができます。アイテム検索から検索結果または全件をCSV保存できます。
 
 ## 在庫の更新ルール
 
@@ -55,7 +55,7 @@ Firefox 140以降が対象です。一時インストールはFirefox再起動�
 
 基本枠とレンタル枠は独立しています。レンタル枠は各ページを開いて取得してください。開いていないページの在庫は古いままです。未契約ページは無理に開く必要はありません。
 
-検索では同名の品をアカウント別に合算します。複数ページ分を合算した行の更新日時は最も古い取得日時で、「ページ別日時」から内訳を確認できます。日時はゲーム内での入手・移動日時ではありません。
+検索とCSVでは同名の品を全アカウント横断で1行に合算し、各アカウント名と所持数を併記します。アカウント絞り込み時は対象アカウント分のみ合算します。複数ページ分を合算した行の更新日時は最も古い取得日時で、「アカウント・ページ別日時」から内訳を確認できます。日時はゲーム内での入手・移動日時ではありません。
 
 ## 更新方法
 

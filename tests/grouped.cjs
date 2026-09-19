@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+require('../common/search.js');require('../common/csv.js');
+const page=(date,items)=>({capturedAt:date,items:items.map(([name,quantity])=>({name,quantity}))});
+const ledger={accounts:[{name:'倉庫B',loginId:'b',pages:{1:page('2026-09-19T00:00:00Z',[['アクア ロッド',2],['アクア ロッド',1]]),2:page('2026-09-18T00:00:00Z',[['アクア ロッド',1]])}},{name:'倉庫A',loginId:'a',pages:{1:page('2026-09-17T00:00:00Z',[['アクア ロッド',3],['剣',1]])}}]};
+const before=JSON.stringify(ledger);
+let rows=MoeSearch.groupedRows(ledger);assert.equal(rows.length,2);
+let rod=rows.find(r=>r.name==='アクア ロッド');assert.equal(rod.quantity,7);assert.deepEqual(rod.owners.map(o=>[o.account.name,o.quantity]),[['倉庫A',3],['倉庫B',4]]);assert.equal(rod.updatedAt,Date.parse('2026-09-17T00:00:00Z'));assert.equal(rod.owners[1].pageDates.size,2);
+assert.equal(MoeSearch.groupedRows(ledger,'アクア','倉庫B')[0].quantity,4);
+assert.equal(MoeSearch.groupedRows(ledger,'存在しない').length,0);
+for(const key of ['name','account','loginId','quantity','updatedAt'])for(const dir of [1,-1])assert.equal(MoeSearch.sort([...rows],key,dir).length,2);
+assert.equal(MoeSearch.sort([...rows],'quantity',-1)[0].quantity,7);
+const csv=MoeCsv.serialize(rows);assert.ok(csv.startsWith('\uFEFF'));assert.ok(csv.includes('倉庫A：3個 / 倉庫B：4個'));assert.ok(csv.includes('倉庫A：a / 倉庫B：b'));assert.ok(csv.includes('"7"'));assert.equal(csv.split('\r\n').length,4);
+assert.equal(JSON.stringify(ledger),before);
+ledger.accounts[0].pages[1].capturedAt='invalid';assert.equal(MoeSearch.groupedRows(ledger)[0].updatedAt,null);
+ledger.accounts[0].pages[1].items=[];assert.equal(MoeSearch.groupedRows(ledger,'アクア')[0].quantity,4);
+const special={name:'=1,"x"\nあ',quantity:1,updatedAt:null,owners:[{account:{name:'倉庫',loginId:''},quantity:1}]};assert.ok(MoeCsv.serialize([special]).includes('"\'=1,""x""\nあ"'));
+console.log('PASS cross-account totals, duplicate slots, owner counts, filtering, dates, sorting, CSV, no storage mutations');
