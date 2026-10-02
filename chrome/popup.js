@@ -2,6 +2,8 @@ const api=globalThis.browser||chrome;
 const $=s=>document.querySelector(s);let ledger={accounts:[],auto:true};
 if(location.search.includes('tab'))document.body.classList.add('expanded');
 let sortKey='name',sortDirection=1;
+const tradeSelection=new Map();
+function tradeCount(){const n=tradeSelection.size;$('#trade-selected').textContent=`選択済み ${n}品（絞り込み外を含む）`;$('#trade-open').disabled=!n;}
 const dateLabel=stamp=>stamp===null?'日時不明':new Date(stamp).toLocaleString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
 const pageName=p=>Number(p)===1?'基本枠':`レンタル${Number(p)-1}`;
 function node(tag,text){const n=document.createElement(tag);n.textContent=text;return n;}
@@ -22,6 +24,8 @@ function render(){
  $('#results').replaceChildren();
  for(const r of result){
   const tr=document.createElement('tr');
+  const chosen=node('td','');const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=tradeSelection.has(r.name);checkbox.setAttribute('aria-label',`${r.name}を売買リストに選択`);
+  checkbox.onchange=()=>{if(checkbox.checked)tradeSelection.set(r.name,{name:r.name,scope:$('#filter').value,available:r.quantity,quantity:1,price:''});else tradeSelection.delete(r.name);tradeCount();};chosen.append(checkbox);
   const name=node('td',r.name);
   const owner=node('td','');
   for(const entry of r.owners){
@@ -39,10 +43,10 @@ function render(){
    }
   }
   updated.append(details);
-  tr.append(name,owner,quantity,updated);$('#results').append(tr);
+  tr.append(chosen,name,owner,quantity,updated);$('#results').append(tr);
  }
  $('#count').textContent=`${result.length}件 / 合計${result.reduce((n,r)=>n+r.quantity,0).toLocaleString()}個`;
- if(!result.length){const td=node('td',ledger.accounts.length?'該当するアイテムはありません':'ゲームからアイテムボックスを開くと、ここに在庫が表示されます。');td.colSpan=4;const tr=document.createElement('tr');tr.append(td);$('#results').append(tr);}
+ if(!result.length){const td=node('td',ledger.accounts.length?'該当するアイテムはありません':'ゲームからアイテムボックスを開くと、ここに在庫が表示されます。');td.colSpan=5;const tr=document.createElement('tr');tr.append(td);$('#results').append(tr);}
 }
 function accounts(){
  $('#account-list').replaceChildren();for(const a of ledger.accounts){const box=node('div','');box.className='account';box.append(node('strong',a.name));for(let p=1;p<=4;p++){const s=a.pages[p];box.append(node('p',`${pageName(p)}：${s?`${s.items.length}/128枠 使用 · ${new Date(s.capturedAt).toLocaleString()}`:'未取得（未契約を含む）'}`));}const label=node('label','ログインID（任意） ');const input=document.createElement('input');input.type='text';input.maxLength=200;input.value=a.loginId;const save=node('button',a.registered?'変更を保存':'登録 / 未入力で続ける');save.onclick=async()=>{try{await send({type:'register',account:a.name,loginId:input.value});status('登録内容を保存しました。');await load();}catch(e){status(e.message);}};label.append(input);box.append(label,save);$('#account-list').append(box);}
@@ -73,3 +77,26 @@ async function exportCsv(all){
 }
 $('#csv-results').onclick=()=>exportCsv(false);
 $('#csv-all').onclick=()=>exportCsv(true);
+
+$('#trade-clear').onclick=()=>{tradeSelection.clear();render();tradeCount();};
+$('#trade-open').onclick=async()=>{
+ const button=$('#trade-open');button.disabled=true;
+ try{
+  const current=(await api.storage.local.get('ledger')).ledger||{accounts:[]};
+  const selected=[];
+  for(const item of tradeSelection.values()){
+   const row=MoeSearch.groupedRows(current,'',item.scope).find(r=>r.name===item.name);
+   if(row)selected.push({name:row.name,available:row.quantity,quantity:1,price:''});
+  }
+  if(!selected.length)throw Error('選択したアイテムが台帳からなくなりました。選択し直してください。');
+  const id='tradeDraft:'+crypto.randomUUID();
+  // Keep separate drafts for multiple generation tabs; discard stale drafts.
+  const stored=await api.storage.local.get(null);
+  const stale=Object.keys(stored).filter(k=>k.startsWith('tradeDraft:')&&Date.now()-(stored[k]?.createdAt||0)>7*86400000);
+  if(stale.length)await api.storage.local.remove(stale);
+  await api.storage.local.set({[id]:{items:selected,comment:'',createdAt:Date.now()}});
+  await api.tabs.create({url:api.runtime.getURL('trade.html')+'?draft='+encodeURIComponent(id)});
+  status('売買tweet生成画面を開きました。販売個数と価格を入力してください。');
+ }catch(e){status(e.message);}finally{tradeCount();}
+};
+tradeCount();
